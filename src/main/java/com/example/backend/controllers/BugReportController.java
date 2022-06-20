@@ -12,10 +12,12 @@ import com.example.backend.dto.BugReportDTO;
 public class BugReportController
 {
 	@PostMapping("/bugreport")
-	public void SendBugReport(@RequestBody BugReportDTO bugReport)
+	public boolean SendBugReport(@RequestBody BugReportDTO bugReport)
 	{
 		System.out.println("Bug report title: " + bugReport.getBugReportTitle());
 		System.out.println("Bug report message: " + bugReport.getBugReportMessage());
 		System.out.println("Bug report email: " + bugReport.getContactEmail());
+		
+		return true;
 	}
 }

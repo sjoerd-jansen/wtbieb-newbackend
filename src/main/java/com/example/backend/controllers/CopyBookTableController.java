@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.StringResponse;
 import com.example.backend.dto.BookCopy;
+import com.example.backend.dto.CopyIdDTO;
 import com.example.backend.repositories.BookTableRepository;
 import com.example.backend.repositories.CopyBookTableRepository;
 import com.example.backend.repositories.EmployeeRepository;
@@ -92,6 +93,31 @@ public class CopyBookTableController
 			copies.add(bookCopy);
 		}
 		
+		// Returns all books currently in the database
+		return copies;
+	}
+
+	// Find all copies in the database
+	@GetMapping("book/findallcopies")
+	public List<CopyIdDTO> GetAllCopies()
+	{
+		// Find all copies in database, store in list (add "." behind id to avoid finding 10 or above as well)
+		List<CopyBookTable> copyBooks = copyBookTableRepo.findAll();
+		// Create new list to store all book copies in
+		List<CopyIdDTO> copies = new ArrayList<CopyIdDTO>();
+
+		for (CopyBookTable copy : copyBooks)
+		{
+			CopyIdDTO bookCopy = new CopyIdDTO();
+			
+			// Add book info to the book copy
+			bookCopy.setCopyId(copy.getCopyId());
+			bookCopy.setCopyAvailable(copy.getBookAvailable());
+			
+			// Add copy to the list
+			copies.add(bookCopy);
+		}
+				
 		// Returns all books currently in the database
 		return copies;
 	}
