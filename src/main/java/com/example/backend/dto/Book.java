@@ -1,6 +1,9 @@
 package com.example.backend.dto;
 
+import java.util.List;
+
 import com.example.backend.tables.BookTable;
+import com.example.backend.tables.EmployeeBookRating;
 
 public class Book
 {
@@ -11,6 +14,7 @@ public class Book
 	private int bookCopies;
 	private String[] bookTags;
 	private String bookCover;
+	private float rating;
 	
 	public long getBookId()
 	{
@@ -70,6 +74,15 @@ public class Book
 	{
 		this.bookCover = bookCover;
 	}
+
+	public float getRating()
+	{
+		return rating;
+	}
+	public void setRating(float rating)
+	{
+		this.rating = rating;
+	}
 	
 	// Create new book copy to send to front-end
 	public Book CreateNewBook(BookTable bookTable)
@@ -88,8 +101,23 @@ public class Book
 			if (bookTable.getBookTags().length() > 0)
 				book.setBookTags(bookTable.getBookTags().split("_"));
 			book.setBookCover(bookTable.getBookCover());
+			rating = GetAverageRating(bookTable.getRatings());
 		}
 		
 		return book;
+	}
+	
+	private float GetAverageRating(List<EmployeeBookRating> ratings)
+	{
+		float average = 0.0f;
+		float total = 0.0f;
+		for (EmployeeBookRating rating : ratings)
+		{
+			total += rating.getRating();
+		}
+		
+		average = total/ratings.size();
+		
+		return average;
 	}
 }

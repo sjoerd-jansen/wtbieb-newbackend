@@ -1,10 +1,13 @@
 package com.example.backend.tables;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -30,7 +33,10 @@ public class BookTable
 	private String bookTags;
 	
 	private String bookCover;
-
+	
+	@OneToMany
+	List<EmployeeBookRating> ratings;
+	
 	// Getters & setters
 	public long getId()
 	{
@@ -94,5 +100,14 @@ public class BookTable
 	{
 		this.bookCover = bookCover;
 	}	
+
+	public List<EmployeeBookRating> getRatings()
+	{
+		return ratings;
+	}
+	public void setRatings(List<EmployeeBookRating> ratings)
+	{
+		this.ratings = ratings;
+	}
 
 }
