@@ -50,7 +50,6 @@ public class ContactController
 	@PostMapping("/returnemail/{bookId}/{employeeId}")
 	public StringResponse ReturnBookRequest(@PathVariable long bookId, @PathVariable long employeeId)
 	{
-		System.out.println("Test1");
 		// Find book and employee
 		Optional<BookTable> optionalBook = bookRepo.findById(bookId);
 		Optional<Employee> optionalEmployee = employeeRepo.findById(employeeId);
@@ -58,7 +57,6 @@ public class ContactController
 		// Check if they exist in the database
 		if (optionalBook.isPresent() && optionalEmployee.isPresent())
 		{
-			System.out.println("Test2");
 			// If they exist, set the book and employee to grab the data easily
 			BookTable book = optionalBook.get();
 			Employee employee = optionalEmployee.get();
@@ -70,10 +68,8 @@ public class ContactController
 			message.setSubject("Boek " + book.getBookTitle() + " lang in bezit");
 			message.setText(ReturnMessage(employee.getEmployeeName(), book.getBookTitle()));
 
-			System.out.println("Test3");
 			// Send the email
 			emailSender.send(message);
-			System.out.println("Test4");
 			return StringResponse.NewResponse("Een verzoek om het boek " + book.getBookTitle() + " in te leveren is verstuurd naar " + employee.getEmployeeName());
 		}
 		

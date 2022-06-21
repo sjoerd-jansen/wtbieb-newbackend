@@ -51,7 +51,7 @@ public class RandomEmployeeGenerator
 			employee.setEmployeePassword(GeneratePassword());
 			employee.setEmployeeAdmin(Math.random() > 0.75);
 			employee.setEmployeeAvatar(employeeAvatar.get(i));
-			
+			employee.setEmployeeActive(true);			
 			employees.add(employee);
 		}
 		
