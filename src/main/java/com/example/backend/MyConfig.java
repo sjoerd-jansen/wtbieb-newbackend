@@ -9,7 +9,10 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 public class MyConfig {
 
     @Bean
-    public JavaMailSender javaMailSender() { 
-          return new JavaMailSenderImpl();
+    public JavaMailSender javaMailSender()
+    {
+    	JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+    	mailSender.setPort(1025);
+    	return mailSender;
     }
 }
