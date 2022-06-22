@@ -14,7 +14,8 @@ public class Book
 	private int bookCopies;
 	private String[] bookTags;
 	private String bookCover;
-	private float rating;
+	private float bookRating;
+	private int usersRated;
 	
 	public long getBookId()
 	{
@@ -75,13 +76,22 @@ public class Book
 		this.bookCover = bookCover;
 	}
 
-	public float getRating()
+	public float getBookRating()
 	{
-		return rating;
+		return bookRating;
 	}
-	public void setRating(float rating)
+	public void setBookRating(float bookRating)
 	{
-		this.rating = rating;
+		this.bookRating = bookRating;
+	}
+
+	public int getUsersRated()
+	{
+		return usersRated;
+	}
+	public void setUsersRated(int usersRated)
+	{
+		this.usersRated = usersRated;
 	}
 	
 	// Create new book copy to send to front-end
@@ -101,7 +111,8 @@ public class Book
 			if (bookTable.getBookTags().length() > 0)
 				book.setBookTags(bookTable.getBookTags().split("_"));
 			book.setBookCover(bookTable.getBookCover());
-			rating = GetAverageRating(bookTable.getRatings());
+			book.setBookRating(GetAverageRating(bookTable.getRatings()));
+			book.setUsersRated(bookTable.getRatings().size());
 		}
 		
 		return book;
@@ -111,12 +122,14 @@ public class Book
 	{
 		float average = 0.0f;
 		float total = 0.0f;
+		
 		for (EmployeeBookRating rating : ratings)
 		{
 			total += rating.getRating();
 		}
 		
-		average = total/ratings.size();
+		if (ratings.size() > 0)
+			average = total/ratings.size();
 		
 		return average;
 	}
