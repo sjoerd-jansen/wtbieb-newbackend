@@ -20,7 +20,6 @@ public class MyConfig {
         
         mailSender.setUsername(System.getenv("email_bieb"));
         mailSender.setPassword(System.getenv("email_api_key"));
-        System.out.println(System.getenv("email_api_key"));
 
     	return mailSender;
     }
