@@ -33,7 +33,7 @@ public class ContactController
 	public StringResponse SendBugReport(@RequestBody BugReportDTO bugReport)
 	{
 		SimpleMailMessage message = new SimpleMailMessage();
-		message.setTo(System.getenv("emai_bieb"));
+		message.setTo(System.getenv("email_bieb"));
 		message.setFrom(bugReport.getContactEmail());
 		message.setSubject(bugReport.getBugReportTitle());
 		message.setText(bugReport.getBugReportMessage());
