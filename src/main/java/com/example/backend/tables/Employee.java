@@ -109,4 +109,13 @@ public class Employee
 	{
 		this.employeeActive = employeeActive;
 	}
+	
+	public List<EmployeeBookRating> getRatings()
+	{
+		return ratings;
+	}
+	public void setRatings(List<EmployeeBookRating> ratings)
+	{
+		this.ratings = ratings;
+	}
 }
