@@ -265,14 +265,16 @@ public class BookTableController
 	public List<LoanStatusLog> GenerateHistory()
 	{
 		List<LoanStatusLog> loanLogs = new ArrayList<LoanStatusLog>();
+		
 		if (employeeRepo.findAll().size() == 0)
 		{
 			GenerateEmployee();
 		}
+		
 		if (loanRepo.findAll().size() == 0 && bookTableRepo.findAll().size() > 0 && employeeRepo.findAll().size() > 0)
 		{
 			loanLogs = historyGenerator.GenerateHistory(copyBookTableRepo.findAll(), employeeRepo.findAll());
-			
+
 			for (LoanStatusLog loanLog : loanLogs)
 			{
 				if (loanLog.getDateReturned() == null)
@@ -281,10 +283,9 @@ public class BookTableController
 					copyBook.setBookAvailable(false);
 					copyBook.setBookLent(true);
 					copyBookTableRepo.save(copyBook);
-					
 					copyBookController.ChangeAvailableCopies(copyBook.getMainBook(), -1);
 					
-					Employee employee = employeeRepo.findById(loanLog.getId()).get();
+					Employee employee = employeeRepo.findById(loanLog.getEmployee().getId()).get();
 					employee.setBooksInPossession(employee.getBooksInPossession()+1);
 					employeeRepo.save(employee);
 				}
@@ -341,7 +342,7 @@ public class BookTableController
 		if (rateRepo.findAll().size() == 0 && books.size() > 0 && employees.size() > 0)
 		{
 			ratings = ratingGenerator.GenerateRating(books, employees);
-			
+
 			for (EmployeeBookRating rating : ratings)
 			{
 				BookTable book = rating.getBook();
@@ -362,6 +363,7 @@ public class BookTableController
 				employeeRepo.save(employee);
 			}
 		}
+		
 		return ratings;
 	}
 }
