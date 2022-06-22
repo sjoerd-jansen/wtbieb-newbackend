@@ -264,6 +264,10 @@ public class BookTableController
 					copyBookTableRepo.save(copyBook);
 					
 					copyBookController.ChangeAvailableCopies(copyBook.getMainBook(), -1);
+					
+					Employee employee = employeeRepo.findById(loanLog.getId()).get();
+					employee.setBooksInPossession(employee.getBooksInPossession()+1);
+					employeeRepo.save(employee);
 				}
 				
 				loanRepo.save(loanLog);

@@ -3,8 +3,8 @@ package com.example.backend;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
+import com.example.backend.security.PasswordHashing;
 import com.example.backend.tables.Employee;
 
 public class RandomEmployeeGenerator
@@ -48,7 +48,8 @@ public class RandomEmployeeGenerator
 			
 			employee.setEmployeeName(name);
 			employee.setEmployeeEmail(email);
-			employee.setEmployeePassword(GeneratePassword());
+			String password = PasswordHashing.encryptThisString("wachtwoord");
+			employee.setEmployeePassword(password);
 			employee.setEmployeeAdmin(Math.random() > 0.75);
 			employee.setEmployeeAvatar(employeeAvatar.get(i));
 			employee.setEmployeeActive(true);			
@@ -56,21 +57,5 @@ public class RandomEmployeeGenerator
 		}
 		
 		return employees;
-	}
-	
-	private static String GeneratePassword()
-	{
-		String password = "";
-	    Random random = new Random();
-
-	    char[] word = new char[random.nextInt(8)+7]; // words of length 7 through 10. (1 and 2 letter words are boring.)
-	    for(int j = 0; j < word.length; j++)
-	    {
-	    	word[j] = (char)('a' + random.nextInt(26));
-	    }
-	    
-	    password = new String(word);
-	    
-	    return password;
 	}
 }
