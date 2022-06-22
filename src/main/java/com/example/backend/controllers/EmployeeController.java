@@ -113,8 +113,8 @@ public class EmployeeController
 				updateEmployee.setEmployeeAvatar(employee.getEmployeeAvatar());
 			
 			updateEmployee.setEmployeeAdmin(employee.getEmployeeAdmin());
-
-			if (employee.getEmployeePassword() != "")
+			System.out.println("employee pass " + employee.getEmployeePassword());
+			if (employee.getEmployeePassword() != null && employee.getEmployeePassword() != "")
 			{
 				String hashedPass = PasswordHashing.encryptThisString(employee.getEmployeePassword());					
 				updateEmployee.setEmployeePassword(hashedPass);

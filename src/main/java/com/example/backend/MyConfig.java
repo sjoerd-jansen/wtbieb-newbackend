@@ -1,5 +1,7 @@
 package com.example.backend;
 
+import java.util.Properties;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -12,7 +14,13 @@ public class MyConfig {
     public JavaMailSender javaMailSender()
     {
     	JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-    	mailSender.setPort(1025);
+
+    	mailSender.setHost("smtp-relay.sendinblue.com");
+        mailSender.setPort(587);
+        
+        mailSender.setUsername(System.getenv("email_bieb"));
+        mailSender.setPassword(System.getenv("email_api_key"));
+
     	return mailSender;
     }
 }
