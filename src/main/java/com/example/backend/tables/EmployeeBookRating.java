@@ -17,7 +17,7 @@ public class EmployeeBookRating
 	private long id;
 	
 	@Column(nullable = false)
-	private float rating;
+	private int rating;
 	
 	@ManyToOne
 	private Employee employee;
@@ -34,11 +34,11 @@ public class EmployeeBookRating
 		this.id = id;
 	}
 	
-	public float getRating()
+	public int getRating()
 	{
 		return rating;
 	}
-	public void setRating(float rating)
+	public void setRating(int rating)
 	{
 		this.rating = rating;
 	}

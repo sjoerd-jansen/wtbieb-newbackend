@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,7 @@ import com.example.backend.tables.BookTable;
 import com.example.backend.tables.Employee;
 import com.example.backend.tables.EmployeeBookRating;
 
+@CrossOrigin(maxAge = 3600)
 @RestController
 public class EmployeeBookRatingController
 {
@@ -61,7 +63,7 @@ public class EmployeeBookRatingController
 	
 	// Add rating to a book
 	@PostMapping("book/{bookId}/{employeeId}/rating")
-	public StringResponse AddRating(@PathVariable long bookId, @PathVariable long employeeId, @RequestParam float rating)
+	public StringResponse AddRating(@PathVariable long bookId, @PathVariable long employeeId, @RequestParam int rating)
 	{
 		Optional<BookTable> optionalBook = bookRepo.findById(bookId);
 		Optional<Employee> optionalEmployee = employeeRepo.findById(employeeId);
@@ -77,7 +79,18 @@ public class EmployeeBookRatingController
 			newRating.setEmployee(employee);
 			newRating.setRating(rating);
 			
+			List<EmployeeBookRating> bookRating = book.getRatings();
+			List<EmployeeBookRating> employeeRating = employee.getRatings();
+			
+			bookRating.add(newRating);
+			employeeRating.add(newRating);
+			
+			book.setRatings(bookRating);
+			employee.setRatings(employeeRating);
+			
 			ratingRepo.save(newRating);
+			bookRepo.save(book);
+			employeeRepo.save(employee);
 			return StringResponse.NewResponse("Je hebt het boek " + book.getBookTitle() + " een rating gegeven van " + rating);
 		}
 		else if (optionalRating.isPresent())
