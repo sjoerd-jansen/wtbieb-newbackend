@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import com.example.backend.security.PasswordHashing;
 import com.example.backend.tables.Employee;
 
 public class RandomEmployeeGenerator
@@ -19,7 +20,9 @@ public class RandomEmployeeGenerator
 				"Sjoerd Jansen",
 				"Jesse van den Ende",
 				"Imane Al Gharib",
-				"Ee Jie Tan"
+				"Ee Jie Tan",
+				"admin",
+				"user"
 			});
 	
 	private List<String> employeeAvatar = Arrays.asList(new String[] 
@@ -30,6 +33,8 @@ public class RandomEmployeeGenerator
 				"https://this-person-does-not-exist.com/img/avatar-2e85f4f41b5810ef6ca99de63db72513.jpg",
 				"https://this-person-does-not-exist.com/img/avatar-52d1451ef88bbfbf8e224f66e253d966.jpg",
 				"https://this-person-does-not-exist.com/img/avatar-17d9b260127f578d0b35c121edd55b40.jpg",
+				"https://this-person-does-not-exist.com/img/avatar-4e8278ddd10f97919af95eabbaa62d08.jpg",
+				"https://this-person-does-not-exist.com/img/avatar-f8dccb5b6fed888d9019b15661e3b366.jpg",
 				"https://this-person-does-not-exist.com/img/avatar-4e8278ddd10f97919af95eabbaa62d08.jpg",
 				"https://this-person-does-not-exist.com/img/avatar-f8dccb5b6fed888d9019b15661e3b366.jpg",
 				"https://this-person-does-not-exist.com/img/avatar-c3fc89087e0d96c1ed9fa0dea027d443.jpg"
@@ -48,29 +53,26 @@ public class RandomEmployeeGenerator
 			
 			employee.setEmployeeName(name);
 			employee.setEmployeeEmail(email);
-			employee.setEmployeePassword(GeneratePassword());
-			employee.setEmployeeAdmin(Math.random() > 0.75);
 			employee.setEmployeeAvatar(employeeAvatar.get(i));
+			employee.setEmployeeActive(true);
+
+			String password = "";
+			if (i == 0 || i == 9)
+			{
+				password = PasswordHashing.encryptThisString("admin");
+				employee.setEmployeeAdmin(true);
+			}
+			else
+			{
+				password = PasswordHashing.encryptThisString("userww");
+				employee.setEmployeeAdmin(false);
+			}
+			
+			employee.setEmployeePassword(password);
 			
 			employees.add(employee);
 		}
 		
 		return employees;
-	}
-	
-	private static String GeneratePassword()
-	{
-		String password = "";
-	    Random random = new Random();
-
-	    char[] word = new char[random.nextInt(8)+7]; // words of length 7 through 10. (1 and 2 letter words are boring.)
-	    for(int j = 0; j < word.length; j++)
-	    {
-	    	word[j] = (char)('a' + random.nextInt(26));
-	    }
-	    
-	    password = new String(word);
-	    
-	    return password;
 	}
 }

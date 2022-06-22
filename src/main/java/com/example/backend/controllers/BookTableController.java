@@ -17,17 +17,23 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.backend.RandomBookGenerator;
 import com.example.backend.RandomBookHistoryGenerator;
 import com.example.backend.RandomEmployeeGenerator;
+import com.example.backend.RandomRatingGenerator;
+import com.example.backend.RandomReservationGenerator;
 import com.example.backend.StringResponse;
 import com.example.backend.dto.Book;
 import com.example.backend.dto.BookCopy;
 import com.example.backend.repositories.BookTableRepository;
 import com.example.backend.repositories.CopyBookTableRepository;
+import com.example.backend.repositories.EmployeeBookRatingRepository;
 import com.example.backend.repositories.EmployeeRepository;
 import com.example.backend.repositories.LoanStatusLogRepository;
+import com.example.backend.repositories.ReservedBookRepository;
 import com.example.backend.tables.BookTable;
 import com.example.backend.tables.CopyBookTable;
 import com.example.backend.tables.Employee;
+import com.example.backend.tables.EmployeeBookRating;
 import com.example.backend.tables.LoanStatusLog;
+import com.example.backend.tables.ReservedBook;
 
 @CrossOrigin(maxAge = 3600)
 @RestController
@@ -43,6 +49,10 @@ public class BookTableController
 	private LoanStatusLogRepository loanRepo;
 	@Autowired
 	private CopyBookTableRepository copyBookTableRepo;
+	@Autowired
+	private ReservedBookRepository reserveRepo;
+	@Autowired
+	private EmployeeBookRatingRepository rateRepo;
 	
 	// Store ID for duplicate book
 	private long duplicateId;
@@ -51,6 +61,8 @@ public class BookTableController
 	private RandomBookGenerator bookGenerator = new RandomBookGenerator();
 	private RandomEmployeeGenerator employeeGenerator = new RandomEmployeeGenerator();
 	private RandomBookHistoryGenerator historyGenerator = new RandomBookHistoryGenerator();
+	private RandomReservationGenerator reservationGenerator = new RandomReservationGenerator();
+	private RandomRatingGenerator ratingGenerator = new RandomRatingGenerator();
 
 	// Get all books in Database
 	@GetMapping("book/findall")
@@ -215,11 +227,13 @@ public class BookTableController
 
 	// Generate random content
 	@GetMapping("book/generate")
-	public void GenerateBooks()
+	public List<BookCopy> GenerateBooks()
 	{
+		List<BookCopy> books = new ArrayList<BookCopy>();
+		
 		if (bookTableRepo.findAll().size() == 0)
 		{
-			List<BookCopy> books = bookGenerator.GenerateBooks();
+			books = bookGenerator.GenerateBooks();
 			
 			for (BookCopy book : books)
 			{
@@ -227,32 +241,37 @@ public class BookTableController
 				NewBook(book, amount);
 			}
 		}
+		return books;
 	}
 
 	@GetMapping("employee/generate")
-	public void GenerateEmployee()
+	public List<Employee> GenerateEmployee()
 	{
+		List<Employee> employees = new ArrayList<Employee>();
 		if (employeeRepo.findAll().size() == 0)
 		{
-			List<Employee> employees = employeeGenerator.GenerateEmployees();
+			employees = employeeGenerator.GenerateEmployees();
 
 			for (Employee employee : employees)
 			{
 				employeeRepo.save(employee);
 			}
-		}		
+		}
+
+		return employees;
 	}
 
 	@GetMapping("history/generate")
-	public void GenerateHistory()
+	public List<LoanStatusLog> GenerateHistory()
 	{
+		List<LoanStatusLog> loanLogs = new ArrayList<LoanStatusLog>();
 		if (employeeRepo.findAll().size() == 0)
 		{
 			GenerateEmployee();
 		}
 		if (loanRepo.findAll().size() == 0 && bookTableRepo.findAll().size() > 0 && employeeRepo.findAll().size() > 0)
 		{
-			List<LoanStatusLog> loanLogs = historyGenerator.GenerateHistory(copyBookTableRepo.findAll(), employeeRepo.findAll());
+			loanLogs = historyGenerator.GenerateHistory(copyBookTableRepo.findAll(), employeeRepo.findAll());
 			
 			for (LoanStatusLog loanLog : loanLogs)
 			{
@@ -269,5 +288,76 @@ public class BookTableController
 				loanRepo.save(loanLog);
 			}
 		}
+		return loanLogs;
+	}
+
+	@GetMapping("reserve/generate")
+	public List<ReservedBook> GenerateReservations()
+	{
+		List<Employee> employees = employeeRepo.findByEmployeeAdminFalse();
+		List<LoanStatusLog> loans = loanRepo.findAll();
+		List<BookTable> books = bookTableRepo.findAll();
+		
+		List<ReservedBook> reservations = new ArrayList<ReservedBook>();
+		
+		if (reserveRepo.findAll().size() == 0 && employees.size() > 0 && books.size() > 0)
+		{
+			reservations = reservationGenerator.GenerateReservations(loans, employees, books);
+			
+			for (ReservedBook reservation : reservations)
+			{
+				List<LoanStatusLog> employeeLoans = loanRepo.findByEmployeeIdAndDateLentNotNullAndDateReturnedNull(reservation.getEmployee().getId());
+				
+				boolean isUnique = true;
+				
+				for (LoanStatusLog loan : employeeLoans)
+				{
+					if (loan.getCopyBook().getMainBook().getId() == reservation.getBook().getId())
+						isUnique = false;
+				}
+				
+				if (isUnique)
+				{
+					reserveRepo.save(reservation);
+				}
+			}
+		}
+		
+		return reservations;
+	}
+
+	@GetMapping("rating/generate")
+	public List<EmployeeBookRating> GenerateRatings()
+	{
+		List<BookTable> books = bookTableRepo.findAll();
+		List<Employee> employees = employeeRepo.findByEmployeeAdminFalse();
+		
+		List<EmployeeBookRating> ratings = new ArrayList<EmployeeBookRating>();
+		
+		if (rateRepo.findAll().size() == 0 && books.size() > 0 && employees.size() > 0)
+		{
+			ratings = ratingGenerator.GenerateRating(books, employees);
+			
+			for (EmployeeBookRating rating : ratings)
+			{
+				BookTable book = rating.getBook();
+				Employee employee = rating.getEmployee();
+				
+
+				List<EmployeeBookRating> bookRating = book.getRatings();
+				List<EmployeeBookRating> employeeRating = employee.getRatings();
+				
+				bookRating.add(rating);
+				employeeRating.add(rating);
+				
+				book.setRatings(bookRating);
+				employee.setRatings(employeeRating);
+
+				rateRepo.save(rating);
+				bookTableRepo.save(book);
+				employeeRepo.save(employee);
+			}
+		}
+		return ratings;
 	}
 }
