@@ -33,7 +33,7 @@ public class ContactController
 	public StringResponse SendBugReport(@RequestBody BugReportDTO bugReport)
 	{
 		SimpleMailMessage message = new SimpleMailMessage();
-		message.setTo("overlordjorrit@wt.nl");
+		message.setTo(System.getenv("emai_bieb"));
 		message.setFrom(bugReport.getContactEmail());
 		message.setSubject(bugReport.getBugReportTitle());
 		message.setText(bugReport.getBugReportMessage());
@@ -64,7 +64,7 @@ public class ContactController
 			// Start creating the message
 			SimpleMailMessage message = new SimpleMailMessage();
 			message.setTo(employee.getEmployeeEmail());
-			message.setFrom("overlordjorrit@wt.nl");
+			message.setFrom(System.getenv("email_bieb"));
 			message.setSubject("Boek " + book.getBookTitle() + " lang in bezit");
 			message.setText(ReturnMessage(employee.getEmployeeName(), book.getBookTitle()));
 
